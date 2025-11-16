@@ -29,7 +29,7 @@ export function TableauEmbed({ url, title = 'Health Insights Dashboard' }: Table
         </div>
       )}
 
-      <div className="relative" style={{ minHeight: '800px' }}>
+      <div className="relative" style={{ minHeight: '1200px' }}>
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
             <div className="text-center">
@@ -46,7 +46,7 @@ export function TableauEmbed({ url, title = 'Health Insights Dashboard' }: Table
         <iframe
           src={url}
           width="100%"
-          height="800"
+          height="1200"
           frameBorder="0"
           allowFullScreen
           onLoad={() => setIsLoading(false)}
