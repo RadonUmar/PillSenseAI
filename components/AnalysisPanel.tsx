@@ -70,8 +70,8 @@ export function AnalysisPanel() {
 
   const data = riskData || getMockData()
 
-  // Tableau Public Dashboard URL - Updated with proper embed format
-  const tableauUrl = 'https://public.tableau.com/views/PillSenseDashboard/PillSenseDashboard?:language=en-US&:display_count=n&:origin=viz_share_link&:embed=y&:showVizHome=no&:toolbar=yes'
+  // Tableau Public Dashboard URL - Latest embed with all parameters
+  const tableauUrl = 'https://public.tableau.com/views/PillSenseDashboard/PillSenseDashboard?:language=en-US&publish=yes&:display_count=yes&:origin=viz_share_link&:embed=yes&:showVizHome=no&:toolbar=yes'
 
   return (
     <div className="space-y-6">
