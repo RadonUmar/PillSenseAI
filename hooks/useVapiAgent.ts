@@ -218,33 +218,39 @@ export function useVapiAgent({
 
       console.log('[VAPI] Starting session with context length:', context.length)
 
-      // Start the call with the assistant configuration
-      await vapi.start({
-        // Use a transient assistant (not saved to VAPI dashboard)
-        // This is free and doesn't require creating assistants in advance
-        transcriber: {
-          provider: 'deepgram',
-          model: 'nova-2',
-          language: 'en-US',
-        },
-        model: {
-          provider: 'openai',
-          model: 'gpt-3.5-turbo',
-          messages: [
-            {
-              role: 'system',
-              content: context,
-            },
-          ],
-          temperature: 0.7,
-        },
-        voice: {
-          provider: 'playht',
-          voiceId: 'jennifer',
-        },
-        // End call button
-        endCallFunctionEnabled: false,
-      })
+      // Get assistant ID from environment or use default
+      const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID
+
+      // Start the call with either assistant ID or transient config
+      if (assistantId) {
+        // Use pre-configured assistant from VAPI dashboard
+        await vapi.start(assistantId)
+      } else {
+        // Fallback to transient assistant (requires VAPI account setup)
+        await vapi.start({
+          transcriber: {
+            provider: 'deepgram',
+            model: 'nova-2',
+            language: 'en-US',
+          },
+          model: {
+            provider: 'openai',
+            model: 'gpt-4o-mini',
+            messages: [
+              {
+                role: 'system',
+                content: context,
+              },
+            ],
+            temperature: 0.7,
+          },
+          voice: {
+            provider: '11labs',
+            voiceId: 'burt',
+          },
+          endCallFunctionEnabled: false,
+        })
+      }
 
       console.log('[VAPI] Session started successfully')
       setState((prev) => ({ ...prev, isRequestingPermission: false }))
