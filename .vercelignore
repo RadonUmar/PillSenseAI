@@ -1,0 +1,11 @@
+# Local SQLite database files
+*.db
+*.db-journal
+/prisma/dev.db
+/prisma/dev.db-journal
+
+# Development files
+.env.local
+
+# Node modules (handled by Vercel)
+node_modules

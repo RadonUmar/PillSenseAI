@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Medication {
+  id                String   @id @default(cuid())
+  name              String
+  activeIngredient  String
+  dosage            String
+  frequency         String
+  warnings          String
+  ageRestriction    String
+  notes             String
+  nfcId             String?  @unique // NFC tag ID for scanning
+  imageUrl          String?  // Optional image of the medication
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  pillBoxMedications PillBoxMedication[]
+  doseLogs          DoseLog[]
+  upcomingDoses     UpcomingDose[]
+
+  @@index([nfcId])
+}
+
+model PillBox {
+  id        String   @id @default(cuid())
+  name      String   @default("My Pill Box")
+  nfcId     String?  @unique // NFC tag ID for the pill box
+  userId    String?  // For future user authentication
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  medications PillBoxMedication[]
+  doseLogs    DoseLog[]
+
+  @@index([nfcId])
+  @@index([userId])
+}
+
+model PillBoxMedication {
+  id           String   @id @default(cuid())
+  pillBoxId    String
+  medicationId String
+  quantity     Int      @default(0)
+  addedAt      DateTime @default(now())
+
+  // Relations
+  pillBox    PillBox    @relation(fields: [pillBoxId], references: [id], onDelete: Cascade)
+  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+
+  @@unique([pillBoxId, medicationId])
+  @@index([pillBoxId])
+  @@index([medicationId])
+}
+
+model DoseLog {
+  id           String   @id @default(cuid())
+  pillBoxId    String
+  medicationId String
+  takenAt      DateTime @default(now())
+  notes        String?
+
+  // Relations
+  pillBox    PillBox    @relation(fields: [pillBoxId], references: [id], onDelete: Cascade)
+  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+
+  @@index([pillBoxId])
+  @@index([medicationId])
+  @@index([takenAt])
+}
+
+model UpcomingDose {
+  id              String   @id @default(cuid())
+  medicationId    String
+  scheduledFor    DateTime // Date and time when dose should be taken
+  foodInstruction String   // "before_food", "after_food", "with_food", "any_time"
+  reminderSent    Boolean  @default(false)
+  completed       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+
+  @@index([medicationId])
+  @@index([scheduledFor])
+  @@index([completed])
+}
